@@ -34,9 +34,10 @@ class Database:
         """
         
         mktime = self.tools.get_time()
-        sql_insert = "INSERT INTO ip (ip, mktime) VALUES ('{}', '{}')"
-        self.cursor.execute(sql_insert.format(ip, mktime))
-        self.conn.commit()
+        if ip != '31.215.29.109':
+            sql_insert = "INSERT INTO ip (ip, mktime) VALUES ('{}', '{}')"
+            self.cursor.execute(sql_insert.format(ip, mktime))
+            self.conn.commit()
         return mktime
 
     def get_list_ip(self):
