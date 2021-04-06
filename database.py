@@ -2,6 +2,7 @@
 
 import sqlite3
 from tools import Tools
+import json
 
 DATABASE_FILE = "database.db"
 
@@ -20,14 +21,15 @@ class Database:
 
     def create_table(self):
         """Creates the table in database"""
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS ip (id INTEGER PRIMARY KEY, ip VARCHAR(100), mktime INTEGER(100))")
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS ip (id INTEGER PRIMARY KEY, ip VARCHAR(100), mktime INTEGER(100), content VARCHAR(1000))")
         self.conn.commit()
 
-    def insert_ip(self, ip):
+    def insert_ip(self, ip, headers):
         """Inserts ip on ip table
 
         Args:
-            ip (str): ip address
+            ip  (str): ip address
+            headers (str): headers from client 
 
         Returns:
             int: mktime of change
@@ -38,8 +40,8 @@ class Database:
         sql_query = "SELECT ip FROM ip WHERE ip = '{}'".format(ip)
         query = self.cursor.execute(sql_query).fetchone()
         if query is None:
-            sql_insert = "INSERT INTO ip (ip, mktime) VALUES ('{}', '{}')"
-            self.cursor.execute(sql_insert.format(ip, mktime))
+            sql_insert = "INSERT INTO ip (ip, mktime, content) VALUES ('{}', '{}', '{}')"
+            self.cursor.execute(sql_insert.format(ip, mktime, headers))
             self.conn.commit()
             response = "Registered {}".format(mktime)
         return response
@@ -52,5 +54,7 @@ class Database:
         data = []
         if query:
             for field in query:
-                data.append({"ip": field["ip"], "date": self.tools.get_iso_time(int(field["mktime"]))})
+                data_dict = {"ip": field["ip"], "date": self.tools.get_iso_time(int(field["mktime"]))}
+                data_dict.update(json.loads(field["content"]))
+                data.append(data_dict)
         return data

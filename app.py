@@ -1,7 +1,9 @@
 import json
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request, make_response, request
 from flask_cors import CORS
+import json
 from database import Database
+
 
 app = Flask(__name__)
 app.config["JSON_SOR_KEYS"] = True
@@ -29,4 +31,5 @@ def register_ip(ip_address):
         ip_address (str): ip address from user
     """
     database = Database()
-    return make_response(jsonify(database.insert_ip(ip_address)))
+    dict_headers = {r[0]: r[1]for r in list(request.headers)}
+    return make_response(jsonify(database.insert_ip(ip_address, json.dumps(dict_headers))))
