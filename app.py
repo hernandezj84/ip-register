@@ -4,7 +4,8 @@ from flask_cors import CORS
 from database import Database
 
 app = Flask(__name__)
-app.config["JSON_SOR_KEYS"] = False
+app.config["JSON_SOR_KEYS"] = True
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 app.config["CORS_HEADERS"] = 'Content-Type'
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
